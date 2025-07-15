@@ -6,7 +6,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message';
 
 const StackLayout = () => {
-    return <Stack screenOptions={{headerShown: false}} ></Stack>
+    return <Stack screenOptions={{headerShown: false}} >
+        <Stack.Screen
+            name="(modals)/profileModal"
+            options={{
+                presentation: 'modal'
+            }}
+        />
+    </Stack>
 }
 
 export default function RootLayout(){

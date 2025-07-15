@@ -1,5 +1,4 @@
 import { View, TouchableOpacity } from 'react-native';
-import { Text } from '@react-navigation/elements';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { colors } from '@/constants/theme';
 import Icon from 'react-native-vector-icons/Entypo';
