@@ -1,6 +1,6 @@
-import { View, TouchableOpacity } from 'react-native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { colors } from '@/constants/theme';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import Chart from 'react-native-vector-icons/FontAwesome6';
 
@@ -47,7 +47,7 @@ export default function CustomTabs({ state, descriptors, navigation }: BottomTab
     }
     
     return (
-        <View className='flex-row border-t-[1.5px] border-t-neutral-800 w-full justify-around items-center bg-neutral-800 ios:h-20 android:h-20'>
+        <View className='flex-row border-t-[1.5px] border-t-neutral-800 w-full justify-around items-center bg-neutral-900 ios:h-20 android:h-20'>
         {state.routes.map((route, index) => {
             const { options } = descriptors[route.key];
             const label: any =
@@ -91,6 +91,11 @@ export default function CustomTabs({ state, descriptors, navigation }: BottomTab
                 {
                     tabberIcons[route.name] && tabberIcons[route.name](isFocused)
                 }
+                <Text 
+                    className={`text-xs uppercase font-semibold mt-1 ${isFocused ? 'text-[#a3e635]' : 'text-neutral-400'}`}
+                >
+                    {label}
+                </Text>
             </TouchableOpacity>
             );
         })}

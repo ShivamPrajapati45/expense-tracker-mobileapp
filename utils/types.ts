@@ -1,5 +1,4 @@
-import { Href } from "expo-router";
-import { Firestore, Timestamp } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { Icon } from "phosphor-react-native";
 import React, { ReactNode } from "react";
 import {
@@ -79,7 +78,7 @@ export type TransactionType = {
 export type CategoryType = {
     label: string;
     value: string;
-    icon: Icon;
+    icon: React.ReactNode;
     bgColor: string;
 };
 export type ExpenseCategoriesType = {
@@ -132,7 +131,7 @@ export type UserType = {
 } | null;
 
 export type UserDataType = {
-    name: string;
+    name?: string;
     image?: any;
 };
 

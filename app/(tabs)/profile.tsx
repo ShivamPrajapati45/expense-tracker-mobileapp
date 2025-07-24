@@ -1,19 +1,19 @@
-import { Alert, Image, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import ScreenWrapper from '@/components/ScreenWrapper'
 import Header from '@/components/Header'
+import ScreenWrapper from '@/components/ScreenWrapper'
+import { auth } from '@/config/firebase'
+import { colors } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { getProfileImage } from '@/services/imageService'
 import { accountOptionType } from '@/utils/types'
-import Icon from 'react-native-vector-icons/FontAwesome6';
-import Setting from 'react-native-vector-icons/Ionicons';
-import Logout from 'react-native-vector-icons/MaterialIcons';
-import Right from 'react-native-vector-icons/Feather';
-import { colors } from '@/constants/theme'
-import { signOut } from 'firebase/auth'
-import { auth } from '@/config/firebase'
 import { useRouter } from 'expo-router'
+import { signOut } from 'firebase/auth'
+import React from 'react'
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native'
 import Animated, { FadeInDown } from 'react-native-reanimated'
+import Right from 'react-native-vector-icons/Feather'
+import Icon from 'react-native-vector-icons/FontAwesome6'
+import Setting from 'react-native-vector-icons/Ionicons'
+import Logout from 'react-native-vector-icons/MaterialIcons'
 
 
 const Profile = () => {
@@ -83,10 +83,10 @@ const Profile = () => {
                 <View className='items-center mt-7 gap-3'>
 
                     {/* avatar */}
-                    <View className='h-24 w-24 items-center rounded-full'>
+                    <View className='h-28 w-28 items-center rounded-full'>
                         <Image
                             source={getProfileImage(user?.image)}
-                            className='items-center rounded-full w-full h-full'
+                            style={{ width: 112, height: 112, borderRadius: 56, borderWidth: 1, borderColor: 'white', alignItems: 'center' }}
                             resizeMode='cover'
                         />
                     </View>

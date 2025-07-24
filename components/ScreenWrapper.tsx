@@ -12,7 +12,7 @@ const ScreenWrapper = ({children,style}:ScreenWrapperProps) => {
         <View style={[{
             paddingTop,
             flex: 1,
-            backgroundColor: colors.neutral900,
+            backgroundColor: 'black',
         },style]}>
             <StatusBar barStyle={'light-content'} />
             {children}
