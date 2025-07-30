@@ -5,6 +5,7 @@ import { uploadFileOnCloudinary } from "./imageService";
 
 export const updateUser = async (uid: string, updatedData: UserDataType):Promise<ResponseType> => {
     try{
+        
         if(updatedData.image && updatedData?.image?.uri){
             const imageUploadRes = await uploadFileOnCloudinary(
                 updatedData?.image,
@@ -18,7 +19,8 @@ export const updateUser = async (uid: string, updatedData: UserDataType):Promise
             };
 
             updatedData.image = imageUploadRes.data;
-        }
+        };
+
         const userRef = doc(fireStore, "users", uid);
         await updateDoc(userRef, updatedData);
 

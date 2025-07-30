@@ -4,12 +4,11 @@ import Input from '@/components/Input'
 import ModalWrapper from '@/components/ModalWrapper'
 import { useAuth } from '@/context/AuthContext'
 import { createOrUpdateWallet, deleteWallet } from '@/services/walletService'
-import { UserDataType, WalletType } from '@/utils/types'
-import * as ImagePicker from 'expo-image-picker'
+import { WalletType } from '@/utils/types'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import Right from 'react-native-vector-icons/Feather'
-import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 
 const WalletModal = () => {

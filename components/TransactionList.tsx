@@ -1,10 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { TransactionItemProps, TransactionListType } from '@/utils/types'
+import { TransactionItemProps, TransactionListType, TransactionType } from '@/utils/types'
 import {FlashList} from '@shopify/flash-list'
-import { expenseCategories } from '@/constants/data';
-import { Icon } from 'react-native-vector-icons/Icon';
+import { expenseCategories, incomeCategory } from '@/constants/data';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Timestamp } from '@firebase/firestore';
+import { useRouter } from 'expo-router';
 
 const TransactionList = ({
     data,
@@ -12,8 +13,23 @@ const TransactionList = ({
     loading,
     emptyListMessage
 }: TransactionListType) => {
-    const handleClick = () => {
 
+    const router = useRouter();
+    const handleClick = (item: TransactionType) => {
+        router.push({
+            pathname: '/(modals)/transactionModal',
+            params: {
+                id: item?.id,
+                type: item?.type,
+                amount: item?.amount?.toString(),
+                category: item?.category,
+                description: item?.description,
+                image: item?.image,
+                date: (item?.date as Timestamp)?.toDate().toISOString(),
+                uid: item?.uid,
+                walletId: item?.walletId
+            }
+        })
     }
     return (
         <View className='gap-3'>
@@ -48,8 +64,16 @@ const TransactionList = ({
 };
 
 export const TransactionItem =({item,index,handleClick}:TransactionItemProps) => {
-    let category = expenseCategories['rent'];
-    console.log(category)
+    const date = (item?.date as Timestamp)?.toDate().toLocaleString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true // Optional: use false for 24-hour format
+    });
+    
+    let category = item?.type === 'income' ? incomeCategory : expenseCategories[item?.category!];
+    // console.log(category)
     return (
         <Animated.View entering={FadeInDown.delay(index * 50).springify().damping(14)}>
             <TouchableOpacity onPress={() => handleClick(item)} activeOpacity={0.75} className='flex-row justify-between items-center mb-3 gap-3 bg-neutral-900 p-3 rounded-lg'>
@@ -62,8 +86,10 @@ export const TransactionItem =({item,index,handleClick}:TransactionItemProps) =>
                 </View>
 
                 <View className='gap-1 items-end justify-center'>
-                    <Text className='text-green-500 font-bold text-xl'>+ $78</Text>
-                    <Text className='text-neutral-300 text-sm'>12 jan</Text>
+                    <Text className={`${item?.type === 'income' ? 'text-green-500' : 'text-red-400'}  font-bold text-xl`}>
+                        {item?.type === 'income' ? `+ $` : `- $`}{item?.amount}
+                    </Text>
+                    <Text className='text-neutral-300 text-sm'>{date}</Text>
                 </View>
             </TouchableOpacity>
         </Animated.View>

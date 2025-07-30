@@ -6,11 +6,28 @@ import Right from 'react-native-vector-icons/Feather'
 import HomeCard from '@/components/HomeCard'
 import TransactionList from '@/components/TransactionList'
 import { useRouter } from 'expo-router'
+import useFetchData from '@/hooks/useFetchData'
+import { limit, orderBy, where } from '@firebase/firestore'
+import { TransactionType } from '@/utils/types'
 
 
 const Home = () => {
     const {user} = useAuth();
     const router = useRouter();
+    const data = [1,2,3,4,5];
+
+    const constraints = [
+        where('uid', "==", user?.uid),
+        orderBy("date", "desc"),
+        limit(30)
+    ]
+
+    const { 
+        data:recentTransactions,
+        error,
+        loading: transactionLoading
+    } = useFetchData<TransactionType>('transactions',constraints);
+
     return (
         <ScreenWrapper>
             <View className='flex-1 px-4 mt-1'>
@@ -35,7 +52,7 @@ const Home = () => {
                         <HomeCard/>
                     </View>
 
-                    <TransactionList title='Recent Transactions' loading={false} data={[1,2,3,4,5,6,7,8,10]} />
+                    <TransactionList title='Recent Transactions' loading={false} data={recentTransactions} />
                     
                 </ScrollView>
 

@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import Right from 'react-native-vector-icons/Feather'
 import { useRouter } from 'expo-router'
@@ -13,19 +13,21 @@ import WalletListItem from '@/components/WalletListItem'
 const Wallet = () => {
     const router = useRouter();
     const {user} = useAuth();
-    const { data:wallets,error,loading } = useFetchData<WalletType>('wallets',[
+    const { 
+            data:wallets,
+            error,
+            loading 
+        } = useFetchData<WalletType>('wallets',[
         where('uid', '==', user?.uid),
         orderBy('created','desc')
     ]);
 
-
-
     const getTotalBalance = () => {
-        wallets.reduce((total, item) => {
+        return wallets.reduce((total, item) => {
             total = total + (item.amount || 0);
             return total;
-        },0)
-    }
+        },0);
+    };
 
     return (
         <ScreenWrapper>
@@ -34,7 +36,7 @@ const Wallet = () => {
                 <View className='h-40 bg-black justify-center items-center'>
                     <View className='items-center gap-3'>
                         <Text className='font-bold text-4xl text-white'>
-                            ${getTotalBalance()}
+                            ${getTotalBalance()?.toFixed(2)}
                         </Text>
                         <Text className='text-lg font-semibold text-neutral-300'>
                             Total Balance
