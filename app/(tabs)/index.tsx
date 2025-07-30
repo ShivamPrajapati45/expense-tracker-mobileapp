@@ -37,7 +37,8 @@ const Home = () => {
                         <Text className='text-white text-2xl font-semibold'>Hello,</Text>
                         <Text className='text-white text-3xl font-bold'>{user?.name}</Text>
                     </View>
-                    <TouchableOpacity activeOpacity={0.75} className=''>
+                    <TouchableOpacity 
+                        onPress={() => router.push('/(modals)/searchModal')} activeOpacity={0.75} className=''>
                         <Right name='search' className='p-1 rounded-full !text-neutral-300' size={28} />
                     </TouchableOpacity>
                 </View>

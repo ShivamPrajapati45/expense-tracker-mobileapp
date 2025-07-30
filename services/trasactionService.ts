@@ -337,13 +337,233 @@ export const fetchWeeklyStats = async (
                     dayData.expense += transaction.amount
                 }
             }
+        });
 
-        })
+        // takes each day and creates two entries in an array
+        const stats = weeklyData.flatMap((day) => [
+            {
+                value: day.income,
+                label: day.day,
+                spacing: 4,
+                labelWidth: 30,
+                frontColor: 'green'
+            },
+            {
+                value: day.expense,
+                frontColor: 'red'
+            }
+        ]);
 
 
-        return { success: true }
+        return { 
+            success: true ,
+            data: {
+                stats,
+                transactions
+            }
+        }
     }catch(err:any){
         console.log('Error Update transaction: ',err);
         return { success: false}
     }
 };
+
+const getLast12Months = () => {
+    const monthsOfYear =[
+        'Jan',
+        'Feb',
+        'Mar',
+        "Apr",
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+    ];
+    const result = [];
+
+    for(let i = 11; i >= 0; i--){
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+
+        const monthName = monthsOfYear[date.getMonth()];
+        const shortYear = date.getFullYear().toString().slice(-2);
+        const formattedMonthYear = `${monthName} ${shortYear}`; // Jan 24, May 25
+        const formattedDate = date.toISOString().split("T")[0];
+
+        result.push({
+            month: formattedMonthYear,
+            fullDate: formattedDate,
+            income: 0,
+            expense: 0
+        })
+    };
+
+    return result.reverse();
+}
+
+const getYearsRange = (startYear: number, endYear: number):any => {
+    const result = [];
+    for(let year = startYear; year <= endYear; year++){
+        result.push({
+            year: year.toString(),
+            fullDate: `01-01-${year}`,
+            income: 0,
+            expense: 0
+        })
+    }
+
+    return result.reverse();
+}
+
+export const fetchYearlyStats = async (
+    uid: string,
+):Promise<ResponseType> => {
+    try{
+
+        const db = fireStore;
+
+        // define query to fetch transactions in the last 12 months
+        const transactionQuery = query(
+            collection(db, 'transactions'),
+            orderBy("date", "desc"),
+            where("uid", "==", uid)
+        );
+
+        const querySnapShot = await getDocs(transactionQuery);
+        const transactions: TransactionType[] = [];
+
+        const firstTransaction = querySnapShot.docs.reduce((earliest, doc) => {
+            const transactionDate = doc.data().date.toDate();
+            return transactionDate < earliest ? transactionDate : earliest
+        }, new Date());
+
+        const firstYear = firstTransaction.getFullYear();
+        const currentYear = new Date().getFullYear();
+
+        const yearlyData = getYearsRange(firstYear, currentYear)
+
+        querySnapShot.forEach((doc) => {
+            const transaction = doc.data() as TransactionType;
+            transaction.id = doc.id; // Include document id in transaction data
+            transactions.push(transaction);
+
+            const transactionYear = (transaction.date as Timestamp).toDate().getFullYear();
+
+            const yearData = yearlyData.find((item:any) => item.year === transactionYear.toString());
+
+            if(yearData){
+                if(transaction.type === 'income'){
+                    yearData.income += transaction.amount;
+                }else if(transaction.type === 'expense'){
+                    yearData.expense += transaction.amount
+                }
+            }
+        });
+
+        // takes each day and creates two entries in an array
+        const stats = yearlyData.flatMap((year:any) => [
+            {
+                value: year.income,
+                label: year.month,
+                spacing: 4,
+                labelWidth: 35,
+                frontColor: 'green'
+            },
+            {
+                value: year.expense,
+                frontColor: 'red'
+            }
+        ]);
+
+
+        return { 
+            success: true ,
+            data: {
+                stats,
+                transactions
+            }
+        }
+    }catch(err:any){
+        console.log('Error Update transaction: ',err);
+        return { success: false}
+    }
+};
+
+export const fetchMonthlyStats = async (
+    uid: string,
+):Promise<ResponseType> => {
+    try{
+
+        const db = fireStore;
+        const today = new Date();
+        const twelveMonthsAgo = new Date(today);
+        twelveMonthsAgo.setMonth(today.getMonth() - 12);
+
+        // define query to fetch transactions in the last 12 months
+        const transactionQuery = query(
+            collection(db, 'transactions'),
+            where('date', ">=", Timestamp.fromDate(twelveMonthsAgo)),
+            where('date', "<=", Timestamp.fromDate(today)),
+            orderBy("date", "desc"),
+            where("uid", "==", uid)
+        );
+
+        const querySnapShot = await getDocs(transactionQuery);
+        const monthlyData = getLast12Months();
+        const transactions: TransactionType[] = [];
+
+        querySnapShot.forEach((doc) => {
+            const transaction = doc.data() as TransactionType;
+            transaction.id = doc.id;
+            transactions.push(transaction);
+
+            const transactionDate = (transaction.date as Timestamp).toDate()
+            const monthName = transactionDate.toLocaleString('default', {
+                month: 'short'
+            });
+            const shortYear = transactionDate.getFullYear().toString().slice(-2);
+            const monthData = monthlyData.find((month) => month.month === `${monthName} ${shortYear}`);
+
+            if(monthData){
+                if(transaction.type === 'income'){
+                    monthData.income += transaction.amount;
+                }else if(transaction.type === 'expense'){
+                    monthData.expense += transaction.amount
+                }
+            }
+        });
+
+        // takes each day and creates two entries in an array
+        const stats = monthlyData.flatMap((month) => [
+            {
+                value: month.income,
+                label: month.month,
+                spacing: 4,
+                labelWidth: 46,
+                frontColor: 'green'
+            },
+            {
+                value: month.expense,
+                frontColor: 'red'
+            }
+        ]);
+
+
+        return { 
+            success: true ,
+            data: {
+                stats,
+                transactions
+            }
+        }
+    }catch(err:any){
+        console.log('Error Update transaction: ',err);
+        return { success: false}
+    }
+};
+
+

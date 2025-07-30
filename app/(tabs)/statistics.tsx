@@ -1,32 +1,20 @@
-import { ScrollView, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import ScreenWrapper from '@/components/ScreenWrapper'
-import Header from '@/components/Header'
+import { Alert, ScrollView, Text, View } from 'react-native'
+import { useEffect, useState } from 'react'
+
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { BarChart } from 'react-native-gifted-charts';
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/context/AuthContext';
+import ScreenWrapper from '@/components/ScreenWrapper';
+import Header from '@/components/Header';
+import { fetchMonthlyStats, fetchWeeklyStats, fetchYearlyStats } from '@/services/trasactionService';
+import TransactionList from '@/components/TransactionList';
 
-const barData = [
-    {
-        value: 40,
-        label: 'Mon',
-        spacing: 4,
-        labelWidth: 30,
-        frontColor: 'red'
-    },
-    {
-        value: 25,
-        label: 'Tues',
-        spacing: 4,
-        labelWidth: 30,
-        frontColor: 'green'
-    },
-]
 
 const Statistics = () => {
     const [activeIndex, setActiveIndex] = useState(0);
-    const [chartData, setChartData] = useState(barData)
+    const [chartData, setChartData] = useState([]);
     const [chartLoading, setChartLoading] = useState(false);
+    const [transactions, setTransactions] = useState([]);
     const { user} = useAuth();
 
     useEffect(() => {
@@ -42,15 +30,57 @@ const Statistics = () => {
     },[activeIndex]);
 
     const getWeeklyStats = async () => {
+        try{
+            setChartLoading(true);
+            let res = await fetchWeeklyStats(user?.uid as string);
+            if(res.success){
+                setChartData(res?.data?.stats);
+                setTransactions(res?.data?.transactions)
+            }else{
+                Alert.alert("Weekly Stats Chart: ", res.msg);
+            }
 
+        }catch(err){
+            console.log('Weekly stats: ',err)
+        }finally{
+            setChartLoading(false)
+        }
     }
 
     const getMonthlyStats = async () => {
+        try{
+            setChartLoading(true);
+            let res = await fetchMonthlyStats(user?.uid as string);
+            if(res.success){
+                setChartData(res?.data?.stats);
+                setTransactions(res?.data?.transactions)
+            }else{
+                Alert.alert("Weekly Stats Chart: ", res.msg);
+            }
 
-    }
+        }catch(err){
+            console.log('Weekly stats: ',err)
+        }finally{
+            setChartLoading(false)
+        }
+    };
 
     const getYearlyStats = async () => {
+        try{
+            setChartLoading(true);
+            let res = await fetchYearlyStats(user?.uid as string);
+            if(res.success){
+                setChartData(res?.data?.stats);
+                setTransactions(res?.data?.transactions)
+            }else{
+                Alert.alert("Weekly Stats Chart: ", res.msg);
+            }
 
+        }catch(err){
+            console.log('Weekly stats: ',err)
+        }finally{
+            setChartLoading(false)
+        }
     }
 
     return (
@@ -105,14 +135,21 @@ const Statistics = () => {
                             </View>
                         )}
 
-                        {
-                            chartLoading && (
+                        {chartLoading && (
                                 <View className='absolute w-full h-full rounded-md bg-black'>
                                     <Text className='animate-pulse duration-200 transition-all text-white
                                     '>Loading...</Text>
                                 </View>
-                            )
-                        }
+                            )}
+                    </View>
+
+                    {/* transactions */}
+                    <View>
+                        <TransactionList
+                            title='Transactions'
+                            emptyListMessage='No Transaction Found'
+                            data={transactions }
+                        />
                     </View>
                 </ScrollView>
 
